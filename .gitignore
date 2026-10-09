@@ -1,0 +1,52 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Variables d'environnement et secrets
+.env
+.env.*
+!.env.example
+secrets/
+credentials/
+config.local.*
+
+# Clés, certificats et archives sensibles
+*.key
+*.pem
+*.pfx
+*.p12
+*.jks
+
+# Bases de données locales générées
+*.db
+*.sqlite
+*.sqlite3
+
+# Journaux et exports privés
+*.log
+data/raw/
+exports/private/
+
+# Fichiers de couverture et tests Python
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Outils de développement
+.vscode/
+.idea/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
