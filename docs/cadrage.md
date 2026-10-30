@@ -143,6 +143,11 @@ Les combinaisons principales seront :
 Ces allocations sont provisoires et pourront être adaptées après mesure de la
 consommation réelle.
 
+> **Mise à jour du dimensionnement :** les ressources et capacités de disque
+> retenues après vérification de l'hôte sont détaillées dans la section
+> « Architecture et ressources prévues ». Ce premier tableau constitue
+> l'estimation initiale du cadrage.
+
 ---
 
 ## 9. Environnement matériel
@@ -258,3 +263,118 @@ vraisemblance et l'impact.
 
 ```text
 Score de risque = vraisemblance × impact
+```
+
+## Stockage de l'infrastructure virtuelle
+
+La machine hôte dispose d'un volume `C:` au format NTFS, installé sur un SSD
+SanDisk PC SN5100S SDFPMSM-512G-1101.
+
+| Élément | Valeur |
+|---|---|
+| Capacité totale | Environ 475,9 Go |
+| Espace libre observé | Environ 419,1 Go |
+| Type de stockage | SSD |
+| État de santé | Healthy |
+| Emplacement des VM | `C:\Hyper-V` |
+
+Les fichiers de l'infrastructure virtuelle seront organisés comme suit :
+
+```
+C:\Hyper-V\
+├── Exports\
+├── ISO\
+├── Virtual Hard Disks\
+└── Virtual Machines\
+```
+
+## Réseau du laboratoire
+
+Le laboratoire utilisera un commutateur Hyper-V interne nommé `SOC-LAB-INT`.
+Ce commutateur permet aux machines virtuelles de communiquer entre elles et
+avec l'hôte Windows, sans les connecter directement au réseau physique.
+
+Le réseau prévu est `192.168.100.0/24`. Aucune passerelle ni aucun serveur DNS
+ne seront configurés sur ce réseau isolé.
+
+| Machine | Adresse IPv4 prévue | Rôle |
+|---|---:|---|
+| Hôte Windows | `192.168.100.1/24` | Administration du laboratoire |
+| `SOC-WAZUH` | `192.168.100.10/24` | Serveur Wazuh |
+| `SOC-WIN11` | `192.168.100.20/24` | Endpoint Windows |
+| `SOC-LINUX` | `192.168.100.30/24` | Endpoint Linux |
+
+L'adresse `192.168.100.1/24` de l'interface virtuelle de l'hôte a été
+configurée et vérifiée à l'état `Preferred`. Un ping local vers cette adresse
+a réussi (4 paquets reçus sur 4).
+
+Les adresses des machines virtuelles sont planifiées ; elles ne sont pas
+encore configurées. L'accès Internet des VM n'est pas prévu sur ce commutateur.
+Toute connexion temporaire nécessaire aux installations ou mises à jour sera
+définie séparément et contrôlée.
+
+## Architecture et ressources prévues
+
+Les machines virtuelles seront hébergées sur Hyper-V, dans les dossiers
+préparés sous `C:\Hyper-V`. Elles utiliseront le commutateur interne
+`SOC-LAB-INT`. Celui-ci permet les communications entre les VM et l'hôte,
+sans connexion directe au réseau physique. ([learn.microsoft.com](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/plan/plan-hyper-v-networking-in-windows-server?utm_source=openai))
+
+| Machine | Système prévu | Rôle | vCPU | Mémoire de démarrage | Disque virtuel maximal | Adresse prévue |
+|---|---|---|---:|---:|---:|---|
+| `SOC-WAZUH` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Serveur Wazuh all-in-one | 4 | 8 Go, fixe | 80 Go, dynamique | `192.168.100.10/24` |
+| `SOC-WIN11` | Windows 11 26H2 x64, ISO multiédition française (édition Pro à confirmer lors de l’installation) | Endpoint Windows supervisé | 2 | 4 Go, fixe | 80 Go, dynamique | `192.168.100.20/24` |
+| `SOC-LINUX` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Endpoint Linux supervisé | 2 | 2 Go, fixe | 40 Go, dynamique | `192.168.100.30/24` |
+
+Les capacités de disque indiquées sont des plafonds pour des disques virtuels
+à allocation dynamique : l'espace réellement occupé sur le SSD augmentera
+avec les données écrites dans les VM.
+
+La machine hôte dispose de 16 Go de RAM installée. Pour limiter la pression
+mémoire, les trois VM ne seront pas démarrées simultanément au début. Les
+essais commenceront avec SOC-WAZUH seul, puis avec SOC-WAZUH et un seul
+endpoint. La stabilité de l'hôte sera vérifiée avant d'envisager d'autres
+combinaisons.
+
+Les systèmes indiqués sont les versions retenues pour le projet ; les ISO
+n'ont pas encore été téléchargées et les VM n'ont pas encore été créées.
+
+## Accès réseau temporaire pour l'installation
+
+Le commutateur `SOC-LAB-INT` restera dédié au réseau du laboratoire. Pour les
+téléchargements et mises à jour nécessaires à l'installation, une VM pourra
+être connectée temporairement au `Default Switch` de Hyper-V, qui fournit
+un accès réseau via l'hôte.
+
+Cette connexion ne sera utilisée que pour les opérations nécessaires. Après
+l'installation et les mises à jour, l'adaptateur réseau de la VM sera
+reconnecté à `SOC-LAB-INT` et l'accès réseau temporaire sera retiré. Une VM
+ne sera pas connectée simultanément aux deux commutateurs pendant les tests.
+
+Le `Default Switch` n'est pas un réseau isolé. Les activités de simulation
+seront réalisées uniquement sur `SOC-LAB-INT`, dans le périmètre du laboratoire.
+
+## Sources et vérification des images ISO
+
+Les images ISO seront obtenues depuis les sources officielles des éditeurs.
+Elles seront enregistrées dans `C:\Hyper-V\ISO`. Avant leur utilisation,
+leur empreinte SHA-256 sera calculée et comparée à la valeur officielle.
+
+| Système | Fichier ou source prévue | SHA-256 officiel |
+|---|---|---|
+| Ubuntu Server 24.04.5 LTS AMD64 | `ubuntu-24.04.5-live-server-amd64.iso` — page officielle Ubuntu Releases, fichier `SHA256SUMS` | `97f3d7ffb032c3eb3b23d2c8be9cc76e60c2c1f2c0146ba5ba9fe01cafae0fd8` |
+| Windows 11 26H2 x64, français | ISO multiédition — page officielle Microsoft de téléchargement | `AA515279F02FB2B425EFF341F0A1F158D61288C72CCA5F9D87B79B5A23F7F918` |
+
+Pour Ubuntu, la valeur sera vérifiée dans le fichier officiel `SHA256SUMS`
+correspondant à la version téléchargée. Pour Windows, la valeur sera
+comparée à celle publiée par Microsoft pour l'ISO française x64.
+
+La vérification dans PowerShell s'effectuera après téléchargement avec :
+
+```powershell
+Get-FileHash "C:\Hyper-V\ISO\nom-du-fichier.iso" -Algorithm SHA256
+```
+
+Une ISO ne sera utilisée que si son empreinte calculée correspond exactement
+à la valeur officielle. L'ISO Windows est multiédition ; la disponibilité et
+l'activation de l'édition Pro dépendront de la licence utilisée.
