@@ -326,6 +326,15 @@ sans connexion directe au réseau physique. ([learn.microsoft.com](https://learn
 | `SOC-WIN11` | Windows 11 26H2 x64, ISO multiédition française (édition Pro à confirmer lors de l’installation) | Endpoint Windows supervisé | 2 | 4 Go, fixe | 80 Go, dynamique | `192.168.100.20/24` |
 | `SOC-LINUX` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Endpoint Linux supervisé | 2 | 2 Go, fixe | 40 Go, dynamique | `192.168.100.30/24` |
 
+> **Dimensionnement testé :** la VM `SOC-WAZUH`, initialement prévue avec
+> 8 Gio de mémoire fixe, a été réglée à 6 Gio à titre expérimental pour
+> fonctionner en parallèle avec `SOC-LINUX` sur l’hôte de 16 Go. Les trois
+> services Wazuh ont atteint l’état `active` et l’agent `soc-linux` a été
+> enrôlé avec le statut `active`. Ce test ne valide pas encore la stabilité
+> du serveur sous une charge de journaux prolongée. Le réglage sera
+> réévalué pendant les scénarios de détection.
+
+
 Les capacités de disque indiquées sont des plafonds pour des disques virtuels
 à allocation dynamique : l'espace réellement occupé sur le SSD augmentera
 avec les données écrites dans les VM.

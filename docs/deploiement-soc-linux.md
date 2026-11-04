@@ -33,39 +33,44 @@ Elle a ensuite été reconnectée à `SOC-LAB-INT`, et son adresse statique
 - Aucune route par défaut n’est configurée sur le réseau de laboratoire.
 - Le ping depuis l’hôte Windows a réussi : 4 paquets reçus sur 4.
 
-## État du déploiement Wazuh
+## Agent Wazuh : installation et enrôlement
 
-L’agent Wazuh n’est pas encore installé ni enregistré auprès du manager.
-Le déploiement et la vérification de l’agent feront l’objet d’une étape séparée.
+L’agent Wazuh `4.14.9-1` a été installé sur `SOC-LINUX`. Pour télécharger le
+paquet, la VM a été connectée temporairement au `Default Switch`, puis
+reconnectée au réseau isolé `SOC-LAB-INT`.
 
-## Informations à compléter
+Le dépôt Wazuh a été désactivé après l’installation ; son fichier de
+configuration est conservé sous le nom `wazuh.list.disabled`.
 
-- Date d’installation : `28/10/2027`
-- Version exacte d’Ubuntu : `24.04.5 LTS (Noble Numbat)`
-- Version du noyau : `6.8.0-147-generic`
+Au premier démarrage, l’agent a échoué car le fichier
+`/var/ossec/etc/ossec.conf` contenait encore la valeur d’exemple
+`MANAGER_IP`. L’adresse du serveur a été corrigée dans la section
+`<client><server>` :
 
-## Installation de l’agent Wazuh
+```xml
+<address>192.168.100.10</address>
+```
 
-L’agent Wazuh a été installé sur `SOC-LINUX` depuis le dépôt officiel Wazuh,
-pendant une connexion temporaire de la VM au commutateur `Default Switch`.
+Après cette correction, le service `wazuh-agent` a démarré avec l’état
+`active`. Le tableau de bord Wazuh confirme l’enrôlement de l’agent :
 
-| Élément | Valeur |
+| Élément | Résultat observé |
 |---|---|
-| Paquet installé | `wazuh-agent` |
-| Version | `4.14.9-1` |
-| Vérification de version | `dpkg-query` |
-| Dépôt Wazuh après installation | Désactivé |
-| Fichier du dépôt désactivé | `/etc/apt/sources.list.d/wazuh.list.disabled` |
+| ID de l’agent | `001` |
+| Nom | `soc-linux` |
+| Adresse IP | `192.168.100.30` |
+| Système | Ubuntu 24.04.5 LTS |
+| Version affichée | `v4.14.9` |
+| Statut | `active` |
 
-Après l’installation, le dépôt Wazuh a été désactivé en renommant son fichier
-de configuration en `wazuh.list.disabled`. Cette précaution évite qu’une mise
-à jour générale des paquets installe une version différente de l’agent sans
-vérification préalable.
+Pour lancer simultanément `SOC-WAZUH` et `SOC-LINUX` sur l’hôte doté de
+16 Go de RAM, la mémoire fixe de `SOC-WAZUH` a été réduite de 8 à **6 Gio
+à titre expérimental**. Ses trois services étaient `active` et l’agent
+Linux s’est enrôlé avec succès. La stabilité sous une charge de journaux
+prolongée reste à évaluer.
 
-La VM a ensuite été reconnectée au commutateur isolé `SOC-LAB-INT`. Sa
-configuration réseau a été vérifiée : l’interface `eth0` possède l’adresse
-`192.168.100.30/24` et aucune route par défaut n’est configurée.
+## Informations
 
-L’agent n’a pas encore été démarré ni enrôlé auprès du manager `SOC-WAZUH`.
-Cette étape est reportée jusqu’à ce que les deux VM puissent fonctionner
-simultanément et communiquer sur le réseau du laboratoire.
+- Date d’installation : non relevée.
+- Version exacte d’Ubuntu : `24.04.5 LTS (Noble Numbat)`.
+- Version du noyau : `6.8.0-147-generic`.
