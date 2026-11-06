@@ -387,3 +387,20 @@ Get-FileHash "C:\Hyper-V\ISO\nom-du-fichier.iso" -Algorithm SHA256
 Une ISO ne sera utilisée que si son empreinte calculée correspond exactement
 à la valeur officielle. L'ISO Windows est multiédition ; la disponibilité et
 l'activation de l'édition Pro dépendront de la licence utilisée.
+
+## Horodatage du laboratoire
+
+`SOC-LINUX` et `SOC-WAZUH` utilisent le fuseau horaire UTC. Le PC hôte
+Windows affiche l’heure locale française : le 6 novembre 2026, elle
+était à UTC+1. Cela explique que les événements SSH datés de 08 h 18
+dans le journal Linux apparaissent vers 09 h 18 dans le tableau de bord
+Wazuh.
+
+Lors d’une vérification, les trois machines affichaient la même heure
+UTC, sans dérive notable constatée. Le service d’intégration Hyper-V
+« Synchronisation date/heure » était activé pour les deux VM.
+
+Sur les VM, `timedatectl` indiquait néanmoins
+`System clock synchronized: no` : la synchronisation NTP n’est donc
+pas confirmée sur ce réseau isolé. Les investigations préciseront
+toujours le fuseau utilisé pour chaque horodatage.

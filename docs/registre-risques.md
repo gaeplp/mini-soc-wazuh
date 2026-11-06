@@ -36,3 +36,14 @@ La vraisemblance et l'impact sont évalués sur une échelle de 1 à 4.
 
 ```text
 Score de risque = vraisemblance × impact
+
+```
+
+Le score varie de 1 à 16. La cotation représente une appréciation dans le
+contexte du laboratoire ; elle ne constitue pas une mesure statistique.
+
+## 3. Registre des risques
+
+| ID | Risque | Actif concerné | Vraisemblance initiale | Impact | Score initial | Contrôle et preuve | Vraisemblance résiduelle | Score résiduel | Limites et actions |
+|---|---|---|---:|---:|---:|---|---:|---:|---|
+| R-01 | Accès non autorisé à `SOC-LINUX` par authentification SSH | Compte utilisateur et VM `SOC-LINUX` | 2 — possible | 3 — important | 6 | Échecs SSH détectés individuellement par Wazuh : règle `5760`, niveau `5`. Voir [scénario 01](../scenarios/01-echecs-authentification.md). | 2 — possible | 6 | La détection ne bloque pas une connexion réussie. Corrélation d’échecs répétés et procédure de réponse à tester ; revoir la cotation après mise en place de contrôles préventifs. |

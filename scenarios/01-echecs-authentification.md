@@ -67,4 +67,38 @@ personnel. Aucun compte externe ou appartenant à un tiers ne sera ciblé.
 
 ## Résultats
 
-À compléter après exécution.
+### Premier test — échec SSH isolé
+
+**Environnement :** `SOC-LINUX` (`192.168.100.30`), supervisé par
+`SOC-WAZUH` sur le réseau isolé `SOC-LAB-INT`.
+
+**Action :** depuis l’hôte Windows (`192.168.100.1`), une connexion SSH
+au compte de test `gaetan` a été tentée avec un mot de passe incorrect,
+puis interrompue.
+
+**Trace observée :** le 5 novembre 2026 à 14 h 11 min 52 s, le journal
+SSH de `SOC-LINUX` contient `Failed password` pour `gaetan`, depuis
+`192.168.100.1`, port source `49670`.
+
+**Résultat Wazuh :** l’événement est visible dans le tableau de bord
+pour l’agent `soc-linux` (ID `001`). Il a déclenché la règle `5760`,
+« sshd: authentication failed. », de niveau `5`. La source indiquée
+est `journald`.
+
+**Qualification :** vrai positif pour la détection d’un échec
+d’authentification. L’action était autorisée et réalisée dans le
+laboratoire ; une seule tentative ne démontre pas une attaque par force
+brute.
+
+**Difficulté rencontrée :** l’alerte n’a pas été retrouvée lors des
+premières recherches dans le tableau de bord. La vérification des
+fichiers du manager, puis la recherche de l’événement précis dans
+l’interface, ont confirmé qu’elle avait bien été générée. L’archivage
+JSON exhaustif, activé temporairement pour le diagnostic, a ensuite
+été désactivé ; `wazuh-manager` est resté actif.
+
+**Preuve :** [détail de l’alerte Wazuh — règle 5760](../screenshots/ssh-echec-isole-soc-linux.png).
+
+**Reste à tester :** plusieurs échecs rapprochés et leur éventuelle
+corrélation. Aucun résultat de détection d’échecs répétés n’est
+revendiqué à ce stade.
