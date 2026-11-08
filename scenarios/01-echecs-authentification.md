@@ -2,7 +2,7 @@
 
 ## Statut
 
-À préparer.
+Test réalisé le 5 novembre 2026 : un échec d’authentification SSH isolé a été détecté par Wazuh sur `SOC-LINUX` (règle `5760`, niveau `5`). L’investigation correspondante est documentée dans [l’investigation 01](../investigations/01-echec-authentification-ssh.md).
 
 ## Objectif
 
