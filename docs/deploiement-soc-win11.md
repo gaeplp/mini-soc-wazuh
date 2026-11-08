@@ -45,9 +45,20 @@ Après l’ajout de cette règle, le ping depuis l’hôte vers la VM a réussi 
 
 ## État de la supervision
 
-L’agent Wazuh Windows n’est pas encore installé ni enregistré auprès du
-manager `SOC-WAZUH`. Son installation et la vérification de sa communication
-feront l’objet d’une étape ultérieure.
+L’agent Wazuh Windows a été installé sur `SOC-WIN11`. Le service
+`WazuhSvc` a été vérifié à l’état `Running`, avec un démarrage
+`Automatic`.
+
+Lors de cette vérification, `SOC-WAZUH` était arrêté : le journal de
+l’agent indiquait une impossibilité de joindre le service d’enrôlement
+à `192.168.100.10:1515`. L’installation et le fonctionnement local du
+service sont donc confirmés, mais l’enrôlement et la remontée d’alertes
+Windows ne sont pas encore démontrés.
+
+La mémoire disponible sur l’hôte de 16 Go a empêché le démarrage
+simultané des deux VM dans la configuration alors testée. L’enrôlement
+reste à vérifier lors d’une session où les deux VM peuvent fonctionner
+ensemble.
 
 ## Points à vérifier ou compléter
 
