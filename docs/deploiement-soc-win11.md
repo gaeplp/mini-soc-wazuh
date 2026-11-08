@@ -60,6 +60,9 @@ simultané des deux VM dans la configuration alors testée. L’enrôlement
 reste à vérifier lors d’une session où les deux VM peuvent fonctionner
 ensemble.
 
+La suite des vérifications est décrite dans le
+[plan de reprise de l’agent Windows](plan-reprise-agent-win11.md).
+
 ## Points à vérifier ou compléter
 
 - Confirmer la capacité maximale du VHDX dans les paramètres Hyper-V.
