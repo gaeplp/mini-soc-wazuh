@@ -3,6 +3,7 @@
 ## Statut
 
 Test réalisé le 6 novembre 2026. La création, la modification et la restauration du fichier de test ont été détectées par Wazuh sur `SOC-LINUX`.
+**Investigation associée :** [investigation 04](../investigations/04-modification-fichier.md).
 
 ## Objectif
 

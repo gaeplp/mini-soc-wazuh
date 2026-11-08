@@ -3,6 +3,7 @@
 ## Statut
 
 Test réalisé le 6 novembre 2026 ; modification du groupe confirmée localement et exécution de la commande observée dans Wazuh.
+**Investigation associée :** [investigation 03](../investigations/03-ajout-groupe-privilegie.md).
 
 ## Objectif
 

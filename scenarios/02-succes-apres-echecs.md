@@ -4,6 +4,7 @@
 
 Test partiel réalisé : un échec suivi d’une réussite. Le scénario
 complet avec plusieurs échecs reste à tester.
+**Investigation associée :** [investigation 02](../investigations/02-succes-apres-echecs.md).
 
 ## Objectif
 
