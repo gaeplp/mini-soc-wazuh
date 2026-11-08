@@ -323,7 +323,7 @@ sans connexion directe au réseau physique. ([learn.microsoft.com](https://learn
 | Machine | Système prévu | Rôle | vCPU | Mémoire de démarrage | Disque virtuel maximal | Adresse prévue |
 |---|---|---|---:|---:|---:|---|
 | `SOC-WAZUH` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Serveur Wazuh all-in-one | 4 | 8 Go, fixe | 80 Go, dynamique | `192.168.100.10/24` |
-| `SOC-WIN11` | Windows 11 Professionnel 26H2 x64, installé depuis l’ISO multiédition française | Endpoint Windows supervisé | 2 | 4 Go, fixe | 80 Go, dynamique | `192.168.100.20/24` |
+| `SOC-WIN11` | Windows 11 Professionnel 26H2 x64, installé depuis l’ISO multiédition française | Endpoint Windows supervisé | 2 | 4 Gio au démarrage, dynamique | 80 Go, dynamique | `192.168.100.20/24` |
 | `SOC-LINUX` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Endpoint Linux supervisé | 2 | 2 Go, fixe | 40 Go, dynamique | `192.168.100.30/24` |
 
 > **Dimensionnement testé :** la VM `SOC-WAZUH`, initialement prévue avec
@@ -333,7 +333,12 @@ sans connexion directe au réseau physique. ([learn.microsoft.com](https://learn
 > enrôlé avec le statut `active`. Ce test ne valide pas encore la stabilité
 > du serveur sous une charge de journaux prolongée. Le réglage sera
 > réévalué pendant les scénarios de détection.
-
+> **Supervision Windows en attente :** l’agent Wazuh est installé sur
+> `SOC-WIN11` et son service a été observé en cours d’exécution.
+> Son enrôlement auprès de `SOC-WAZUH` et la remontée d’alertes Windows
+> ne sont pas encore confirmés. Avec 16 Go de RAM sur l’hôte, le démarrage
+> simultané des deux VM n’a pas abouti dans la configuration testée.
+> Voir [le déploiement de SOC-WIN11](deploiement-soc-win11.md).
 
 Les capacités de disque indiquées sont des plafonds pour des disques virtuels
 à allocation dynamique : l'espace réellement occupé sur le SSD augmentera
