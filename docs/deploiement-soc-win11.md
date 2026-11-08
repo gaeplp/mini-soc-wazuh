@@ -13,7 +13,7 @@ laboratoire Mini-SOC.
 | Hyperviseur | Hyper-V, génération 2 |
 | Système installé | Windows 11 Professionnel 26H2 |
 | Processeurs virtuels | 2 |
-| Mémoire | 4 Go, mémoire dynamique désactivée |
+| Mémoire | 4 Gio au démarrage, mémoire dynamique activée (configuration Hyper-V relevée lors du diagnostic) |
 | Disque virtuel | VHDX dynamique, capacité maximale prévue de 80 Go |
 | Sécurité | Démarrage sécurisé activé, modèle « Microsoft Windows », TPM virtuel activé |
 | Commutateur du laboratoire | `SOC-LAB-INT` |
