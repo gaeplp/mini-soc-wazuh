@@ -323,7 +323,7 @@ sans connexion directe au réseau physique. ([learn.microsoft.com](https://learn
 | Machine | Système prévu | Rôle | vCPU | Mémoire de démarrage | Disque virtuel maximal | Adresse prévue |
 |---|---|---|---:|---:|---:|---|
 | `SOC-WAZUH` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Serveur Wazuh all-in-one | 4 | 8 Go, fixe | 80 Go, dynamique | `192.168.100.10/24` |
-| `SOC-WIN11` | Windows 11 26H2 x64, ISO multiédition française (édition Pro à confirmer lors de l’installation) | Endpoint Windows supervisé | 2 | 4 Go, fixe | 80 Go, dynamique | `192.168.100.20/24` |
+| `SOC-WIN11` | Windows 11 Professionnel 26H2 x64, installé depuis l’ISO multiédition française | Endpoint Windows supervisé | 2 | 4 Go, fixe | 80 Go, dynamique | `192.168.100.20/24` |
 | `SOC-LINUX` | Ubuntu Server 24.04.5 LTS, sans interface graphique | Endpoint Linux supervisé | 2 | 2 Go, fixe | 40 Go, dynamique | `192.168.100.30/24` |
 
 > **Dimensionnement testé :** la VM `SOC-WAZUH`, initialement prévue avec

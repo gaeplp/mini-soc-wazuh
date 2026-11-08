@@ -45,7 +45,7 @@ statique du laboratoire a été restaurée.
 Les identifiants générés par l'assistant d'installation sont conservés
 hors du dépôt. Aucun mot de passe, jeton ou secret ne doit être publié.
 
-## Informations à compléter
+## Informations relevées
 
 - Date de l'installation : 27/10/2026
 - Version exacte de Wazuh : `4.14.9-1`
