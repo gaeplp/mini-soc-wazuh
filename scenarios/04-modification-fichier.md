@@ -85,6 +85,10 @@ Une alerte « Integrity checksum changed. », de niveau `7`, a été observée
 pour `soc-linux`. Le détail de l’alerte a été vérifié pour confirmer
 qu’elle concernait le fichier de test.
 
+**Preuve :** [alerte Wazuh de la première modification du fichier](../screenshots/modification-fichier-soc-linux.png).
+La capture montre le chemin du fichier, l’événement `modified`, le mode
+`realtime` et le changement des empreintes avant et après.
+
 Enfin, le contenu initial a été restauré et vérifié dans la VM. Wazuh a
 également signalé cette restauration comme une modification :
 `syscheck.event = modified`, `syscheck.mode = realtime`, avec le chemin
