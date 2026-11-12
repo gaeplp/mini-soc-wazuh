@@ -1,3 +1,4 @@
+import json
 import subprocess
 import sys
 import tempfile
@@ -68,6 +69,36 @@ class TestAlertesSQLite(unittest.TestCase):
                 "Règle 5760 : 2 alerte(s)",
             ],
         )
+
+    def test_resume_filtre_deux_agents(self):
+        self.lancer("importer", DONNEES)
+
+        fichier_autre_agent = Path(self.dossier.name) / "autre-agent.jsonl"
+        fichier_autre_agent.write_text(
+            json.dumps({
+                "timestamp": "2026-01-01T10:10:00Z",
+                "agent": "autre-agent",
+                "rule_id": 5760,
+                "level": 5,
+                "description": "Échec fictif sur un autre agent",
+            }, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        self.lancer("importer", fichier_autre_agent)
+
+        self.assertEqual(
+            self.lancer("resumer", "--agent", "autre-agent"),
+            "Règle 5760 : 1 alerte(s)",
+        )
+        self.assertEqual(
+            self.lancer("resumer", "--agent", "demo-linux").splitlines(),
+            [
+                "Règle 554 : 1 alerte(s)",
+                "Règle 5715 : 1 alerte(s)",
+                "Règle 5760 : 1 alerte(s)",
+            ],
+        )
+        self.assertIn("Règle 5760 : 2 alerte(s)", self.lancer("resumer"))
 
 if __name__ == "__main__":
     unittest.main()

@@ -32,6 +32,8 @@ python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-wazuh-format.db" importer 
 python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-wazuh-format.db" lister --agent demo-linux
 python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-demo.db" resumer
 ```
+La commande `resumer` accepte aussi `--agent demo-linux` pour limiter
+les comptages à cet agent ; sans ce filtre, elle compte tous les agents.
 
 Une seconde importation du même fichier n’ajoute pas les alertes déjà
 présentes selon la clé d’unicité de l’outil.

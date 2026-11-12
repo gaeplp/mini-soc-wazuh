@@ -74,16 +74,18 @@ def lister(connexion, agent):
     ):
         print(f"{horodatage} | {nom} | règle {regle} | niveau {niveau} | {description}")
 
-def resumer(connexion):
-    requete = """
-        SELECT rule_id, COUNT(*)
-        FROM alertes
-        GROUP BY rule_id
-        ORDER BY rule_id
-    """
-    for regle, nombre in connexion.execute(requete):
-        print(f"Règle {regle} : {nombre} alerte(s)")
+def resumer(connexion, agent=None):
+    requete = "SELECT rule_id, COUNT(*) FROM alertes"
+    parametres = ()
 
+    if agent:
+        requete += " WHERE agent = ?"
+        parametres = (agent,)
+
+    requete += " GROUP BY rule_id ORDER BY rule_id"
+
+    for regle, nombre in connexion.execute(requete, parametres):
+        print(f"Règle {regle} : {nombre} alerte(s)")
 
 def main():
     analyseur = argparse.ArgumentParser(
@@ -95,7 +97,8 @@ def main():
     commandes = analyseur.add_subparsers(dest="commande", required=True)
     commandes.add_parser("importer").add_argument("fichier", type=Path)
     commandes.add_parser("lister").add_argument("--agent")
-    commandes.add_parser("resumer")
+    commandes.add_parser("resumer").add_argument("--agent")
+
 
     arguments = analyseur.parse_args()
     with sqlite3.connect(arguments.db) as connexion:
@@ -105,8 +108,7 @@ def main():
         elif arguments.commande == "lister":
             lister(connexion, arguments.agent)
         else:
-            resumer(connexion)
-
+            resumer(connexion, arguments.agent)
 
 if __name__ == "__main__":
     main()
