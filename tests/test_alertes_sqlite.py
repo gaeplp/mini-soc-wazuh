@@ -40,6 +40,20 @@ class TestAlertesSQLite(unittest.TestCase):
         self.assertIn("règle 554", lignes[2])
         self.assertEqual(self.lancer("lister", "--agent", "agent-inconnu"), "")
 
+    def test_import_format_wazuh(self):
+        donnees_wazuh = RACINE / "sample-data" / "alerte-wazuh-fictive.jsonl"
+
+        self.assertEqual(
+            self.lancer("importer", donnees_wazuh),
+            "1 alerte(s) ajoutée(s).",
+        )
+        self.assertEqual(
+            self.lancer("importer", donnees_wazuh),
+            "0 alerte(s) ajoutée(s).",
+        )
+
+        resultat = self.lancer("lister", "--agent", "demo-linux")
+        self.assertIn("règle 5760 | niveau 5 | Échec SSH fictif", resultat)
 
 if __name__ == "__main__":
     unittest.main()

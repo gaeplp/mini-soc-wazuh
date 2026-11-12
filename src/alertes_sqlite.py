@@ -25,13 +25,24 @@ def importer(connexion, fichier):
             continue
         try:
             alerte = json.loads(ligne)
-            valeurs = (
-                str(alerte["timestamp"]),
-                str(alerte["agent"]),
-                int(alerte["rule_id"]),
-                int(alerte["level"]),
-                str(alerte["description"]),
-            )
+            if isinstance(alerte.get("agent"), dict):
+                # Format d'une alerte Wazuh
+                valeurs = (
+                    str(alerte["timestamp"]),
+                    str(alerte["agent"]["name"]),
+                    int(alerte["rule"]["id"]),
+                    int(alerte["rule"]["level"]),
+                    str(alerte["rule"]["description"]),
+                )
+            else:
+                # Format simplifié des données de démonstration
+                valeurs = (
+                    str(alerte["timestamp"]),
+                    str(alerte["agent"]),
+                    int(alerte["rule_id"]),
+                    int(alerte["level"]),
+                    str(alerte["description"]),
+                )
         except (ValueError, TypeError, KeyError) as erreur:
             raise ValueError(f"Ligne {numero} invalide : {erreur}") from erreur
 
