@@ -74,21 +74,38 @@ def lister(connexion, agent):
     ):
         print(f"{horodatage} | {nom} | règle {regle} | niveau {niveau} | {description}")
 
+def resumer(connexion):
+    requete = """
+        SELECT rule_id, COUNT(*)
+        FROM alertes
+        GROUP BY rule_id
+        ORDER BY rule_id
+    """
+    for regle, nombre in connexion.execute(requete):
+        print(f"Règle {regle} : {nombre} alerte(s)")
+
 
 def main():
-    analyseur = argparse.ArgumentParser(description="Chronologie locale d'alertes de démonstration")
-    analyseur.add_argument("--db", required=True, type=Path, help="Chemin de la base SQLite")
+    analyseur = argparse.ArgumentParser(
+        description="Chronologie locale d'alertes de démonstration"
+    )
+    analyseur.add_argument(
+        "--db", required=True, type=Path, help="Chemin de la base SQLite"
+    )
     commandes = analyseur.add_subparsers(dest="commande", required=True)
     commandes.add_parser("importer").add_argument("fichier", type=Path)
     commandes.add_parser("lister").add_argument("--agent")
+    commandes.add_parser("resumer")
 
     arguments = analyseur.parse_args()
     with sqlite3.connect(arguments.db) as connexion:
         creer_table(connexion)
         if arguments.commande == "importer":
             importer(connexion, arguments.fichier)
-        else:
+        elif arguments.commande == "lister":
             lister(connexion, arguments.agent)
+        else:
+            resumer(connexion)
 
 
 if __name__ == "__main__":

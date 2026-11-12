@@ -55,5 +55,19 @@ class TestAlertesSQLite(unittest.TestCase):
         resultat = self.lancer("lister", "--agent", "demo-linux")
         self.assertIn("règle 5760 | niveau 5 | Échec SSH fictif", resultat)
 
+    def test_resume_par_regle(self):
+        self.lancer("importer", DONNEES)
+        donnees_wazuh = RACINE / "sample-data" / "alerte-wazuh-fictive.jsonl"
+        self.lancer("importer", donnees_wazuh)
+
+        self.assertEqual(
+            self.lancer("resumer").splitlines(),
+            [
+                "Règle 554 : 1 alerte(s)",
+                "Règle 5715 : 1 alerte(s)",
+                "Règle 5760 : 2 alerte(s)",
+            ],
+        )
+
 if __name__ == "__main__":
     unittest.main()

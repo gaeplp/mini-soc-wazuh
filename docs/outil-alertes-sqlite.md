@@ -30,6 +30,7 @@ Pour essayer le format Wazuh fictif dans une base distincte :
 ```powershell
 python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-wazuh-format.db" importer sample-data/alerte-wazuh-fictive.jsonl
 python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-wazuh-format.db" lister --agent demo-linux
+python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-demo.db" resumer
 ```
 
 Une seconde importation du même fichier n’ajoute pas les alertes déjà
@@ -44,6 +45,7 @@ python -m unittest discover -s tests -v
 Les trois tests vérifient l’absence de doublons lors d’un second import,
 l’ordre chronologique et le filtre par agent, ainsi que l’import du
 format Wazuh fictif.
+Un quatrième test vérifie le comptage des alertes par règle.
 
 ## Limites et précautions
 
