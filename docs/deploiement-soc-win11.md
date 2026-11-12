@@ -14,7 +14,7 @@ laboratoire Mini-SOC.
 | Système installé | Windows 11 Professionnel 26H2 |
 | Processeurs virtuels | 2 |
 | Mémoire | 4 Gio au démarrage, mémoire dynamique activée (configuration Hyper-V relevée lors du diagnostic) |
-| Disque virtuel | VHDX dynamique, capacité maximale prévue de 80 Go |
+| Disque virtuel | VHDX dynamique, capacité maximale de 80 Gio (vérifiée sur l’hôte Hyper-V) |
 | Sécurité | Démarrage sécurisé activé, modèle « Microsoft Windows », TPM virtuel activé |
 | Commutateur du laboratoire | `SOC-LAB-INT` |
 | Adresse IPv4 | `192.168.100.20/24` |
@@ -65,7 +65,6 @@ La suite des vérifications est décrite dans le
 
 ## Points à vérifier ou compléter
 
-- Confirmer la capacité maximale du VHDX dans les paramètres Hyper-V.
 - Vérifier la situation de l’activation de Windows ; la licence de l’hôte
   ne vaut pas automatiquement pour la VM.
 - Relever les comptes de test créés pour les scénarios, sans publier de
