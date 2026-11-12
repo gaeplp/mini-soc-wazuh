@@ -46,6 +46,14 @@ Les risques associés et les limites des contrôles sont consignés dans le
 - [ ] Exploitation des événements avec Python et SQLite
 - [ ] Rapport final
 
+## Outil Python et SQLite
+
+Un prototype permet d’importer des alertes fictives et de les consulter
+dans une base SQLite, avec un filtre par agent.
+
+La [documentation de l’outil Python/SQLite](docs/outil-alertes-sqlite.md)
+présente son utilisation, ses tests et ses limites.
+
 ## Cadre éthique
 
 Les tests sont réalisés uniquement dans un laboratoire personnel isolé,
