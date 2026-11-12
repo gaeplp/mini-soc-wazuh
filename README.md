@@ -1,78 +1,54 @@
-# Mini-SOC Wazuh, Python et SQLite
+# Mini-SOC Wazuh
 
 ## Présentation
 
-Ce projet personnel consiste à construire un laboratoire de supervision,
-détection et investigation de sécurité reposant sur Wazuh, Windows, Linux,
-Python et SQLite.
+Ce projet personnel est un laboratoire de supervision et d’investigation
+de sécurité construit avec Hyper-V et Wazuh. Il associe des tests contrôlés
+à une démarche simplifiée de gestion des risques.
 
-Le projet associe des compétences techniques de SOC à une démarche simplifiée
-de gestion des risques. Chaque scénario de détection sera relié à un actif, une
-menace, un impact potentiel, un contrôle de sécurité et des recommandations.
+Le projet est en cours : les scénarios documentés ont été réalisés sur
+Linux. La supervision de Windows et l’exploitation des événements avec
+Python et SQLite restent à valider ou à développer.
 
-## Objectifs
+## Architecture du laboratoire
 
-- centraliser des événements Windows et Linux ;
-- détecter des activités contrôlées dans un laboratoire isolé ;
-- analyser et qualifier les alertes ;
-- reconstituer des chronologies d'incident ;
-- relier les détections à des risques de sécurité ;
-- exploiter des événements avec Python et SQLite ;
-- produire une documentation technique reproductible.
+- **Hôte :** Windows 11 avec Hyper-V, 16 Go de RAM.
+- **SOC-WAZUH :** serveur Wazuh tout-en-un sous Ubuntu Server.
+- **SOC-LINUX :** endpoint Ubuntu Server avec agent Wazuh actif.
+- **SOC-WIN11 :** endpoint Windows 11 avec agent installé ; son enrôlement
+  et la remontée d’alertes ne sont pas encore confirmés.
+- **Réseau :** commutateur virtuel isolé `SOC-LAB-INT`.
 
-## Architecture prévue
+La mémoire de l’hôte limite les combinaisons de VM pouvant fonctionner
+simultanément. Voir le [cadrage](docs/cadrage.md) et le
+[plan de reprise de l’agent Windows](docs/plan-reprise-agent-win11.md).
 
-Le laboratoire comprendra :
+## Scénarios réalisés sur SOC-LINUX
 
-- un serveur Wazuh tout-en-un sous Ubuntu Server ;
-- un endpoint Windows 11 ;
-- un endpoint Ubuntu Linux ;
-- un réseau virtuel isolé ;
-- une machine hôte Windows 11 pour l'administration et le développement.
+| Scénario | Résultat observé | Investigation |
+|---|---|---|
+| [01 — Échec SSH isolé](scenarios/01-echecs-authentification.md) | Échec détecté par Wazuh ; un événement isolé ne démontre pas une attaque par force brute. | [Investigation 01](investigations/01-echec-authentification-ssh.md) |
+| [02 — Échec puis réussite SSH](scenarios/02-succes-apres-echecs.md) | Deux événements détectés séparément ; aucune alerte de corrélation automatique démontrée. | [Investigation 02](investigations/02-succes-apres-echecs.md) |
+| [03 — Ajout au groupe sudo](scenarios/03-ajout-groupe-privilegie.md) | Commande privilégiée visible dans Wazuh ; changement de groupe confirmé par les vérifications locales. | [Investigation 03](investigations/03-ajout-groupe-privilegie.md) |
+| [04 — Modification d’un fichier](scenarios/04-modification-fichier.md) | Création et modifications détectées par la surveillance d’intégrité ; auteur non établi par l’alerte examinée. | [Investigation 04](investigations/04-modification-fichier.md) |
 
-## Scénarios principaux
-
-1. Échecs d'authentification répétés
-2. Connexion réussie après plusieurs échecs
-3. Ajout d'un compte à un groupe privilégié
-4. Modification d'un fichier surveillé
-
-## Technologies
-
-- Wazuh
-- Windows 11
-- Ubuntu Server
-- Python
-- SQLite
-- Git et GitHub
-- Visual Studio Code
-- Virtualisation
+Les risques associés et les limites des contrôles sont consignés dans le
+[registre des risques](docs/registre-risques.md).
 
 ## État du projet
 
-- [x] Évaluation des ressources matérielles
-- [x] Installation des outils de travail
-- [x] Initialisation du dépôt Git local
-- [ ] Documentation initiale
-- [ ] Choix et configuration de l'hyperviseur
-- [ ] Architecture réseau
-- [ ] Installation de Wazuh
-- [ ] Déploiement des agents
-- [ ] Configuration de la journalisation
-- [ ] Exécution des scénarios
-- [ ] Règles personnalisées
-- [ ] Investigations
-- [ ] Outil Python et SQLite
+- [x] Architecture Hyper-V et réseau de laboratoire préparés
+- [x] Serveur Wazuh installé et accessible
+- [x] Agent Linux enrôlé et quatre scénarios documentés
+- [x] Investigations associées aux quatre scénarios
+- [x] Registre simplifié des risques
+- [ ] Enrôlement et remontée d’alertes de l’agent Windows à confirmer
+- [ ] Exploitation des événements avec Python et SQLite
 - [ ] Rapport final
 
 ## Cadre éthique
 
-Toutes les expérimentations seront réalisées dans un laboratoire personnel
-isolé. Aucun système tiers ne sera ciblé. Aucun logiciel malveillant réel,
-identifiant réel ou donnée personnelle sensible ne sera utilisé.
-
-Les données publiées seront fictives, synthétiques ou anonymisées.
-
-## Statut
-
-Projet en cours de cadrage.
+Les tests sont réalisés uniquement dans un laboratoire personnel isolé,
+sur des machines et des comptes autorisés. Les résultats documentent ce
+qui a été effectivement observé, sans assimiler les tests à des incidents
+réels. Aucun mot de passe ou autre secret ne doit être publié dans le dépôt.
