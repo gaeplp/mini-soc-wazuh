@@ -55,3 +55,24 @@ ils ne valident pas encore l’import d’un export réel du laboratoire.
 Avant d’utiliser un export réel, examiner et anonymiser ses données.
 Ne publier dans le dépôt ni journaux bruts, ni identifiants sensibles,
 ni base SQLite contenant des alertes réelles.
+
+## Essai avec des alertes du laboratoire
+
+Les archives Wazuh des 5 et 6 novembre 2026 ont été consultées sur
+`SOC-WAZUH`. Pour l’agent `soc-linux`, 12 alertes correspondant aux
+règles `5760`, `5715` et `554` ont été sélectionnées.
+
+Un fichier JSONL minimal a été créé hors du dépôt. Il conserve uniquement
+l’horodatage, un nom d’agent fictif (`lab-linux`), l’identifiant et le
+niveau de la règle, ainsi qu’une description générique. Les comptes,
+adresses IP et journaux bruts n’y figurent pas.
+
+Ce fichier a été copié dans le dossier temporaire du PC hôte et importé
+dans une base SQLite temporaire. Le filtre `--agent lab-linux` a retourné
+12 lignes. Une seconde importation du même fichier a ajouté 0 alerte.
+
+Ce test valide l’import et la consultation de **cet extrait minimisé**
+d’événements du laboratoire. Il ne valide pas l’import exhaustif des
+alertes Wazuh ni l’absence de collisions entre alertes distinctes.
+Le fichier JSONL et la base SQLite n’ont pas été ajoutés au dépôt.
+
