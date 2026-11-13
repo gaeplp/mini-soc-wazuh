@@ -88,3 +88,13 @@ d’événements du laboratoire. Il ne valide pas l’import exhaustif des
 alertes Wazuh ni l’absence de collisions entre alertes distinctes.
 Le fichier JSONL et la base SQLite n’ont pas été ajoutés au dépôt.
 
+### Vérification avec le nouveau schéma SQLite
+
+L’extrait minimisé de 12 alertes a été réimporté dans une nouvelle base
+SQLite, sans modifier la base créée avec l’ancien schéma. Le résumé filtré
+sur `lab-linux` indique 1 alerte pour la règle `554`, 5 pour `5715` et
+6 pour `5760`. Une seconde importation a ajouté 0 alerte.
+
+Cet extrait ne contient pas les identifiants `id` d’origine de Wazuh :
+ce test vérifie donc le repli sur les champs conservés, et non la
+déduplication par identifiant réel.
