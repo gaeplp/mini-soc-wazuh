@@ -99,6 +99,35 @@ class TestAlertesSQLite(unittest.TestCase):
             ],
         )
         self.assertIn("Règle 5760 : 2 alerte(s)", self.lancer("resumer"))
+        
+    def test_ids_wazuh_distincts(self):
+        fichier = Path(self.dossier.name) / "ids-distincts.jsonl"
+        alertes = [
+            {
+                "id": identifiant,
+                "timestamp": "2026-01-01T12:00:00.000+0000",
+                "agent": {"name": "demo-linux"},
+                "rule": {
+                    "id": "5760",
+                    "level": 5,
+                    "description": "Échec SSH fictif",
+                },
+            }
+            for identifiant in ("evenement-001", "evenement-002")
+        ]
+        fichier.write_text(
+            "\n".join(json.dumps(alerte, ensure_ascii=False) for alerte in alertes)
+            + "\n",
+            encoding="utf-8",
+        )
+
+        self.assertEqual(self.lancer("importer", fichier), "2 alerte(s) ajoutée(s).")
+        self.assertEqual(self.lancer("importer", fichier), "0 alerte(s) ajoutée(s).")
+        self.assertEqual(
+            self.lancer("resumer", "--agent", "demo-linux"),
+            "Règle 5760 : 2 alerte(s)",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -44,9 +44,12 @@ présentes selon la clé d’unicité de l’outil.
 python -m unittest discover -s tests -v
 ```
 
-Les trois tests vérifient l’absence de doublons lors d’un second import,
-l’ordre chronologique et le filtre par agent, ainsi que l’import du
-format Wazuh fictif.
+Pour les alertes Wazuh possédant un champ `id`, l’outil utilise cet
+identifiant pour éviter les doublons lors d’une réimportation, tout en
+conservant deux événements distincts ayant les mêmes champs affichés.
+Sans `id`, il utilise une clé calculée à partir des champs conservés :
+deux événements distincts ayant exactement ces mêmes champs peuvent
+encore être confondus.
 Un quatrième test vérifie le comptage des alertes par règle.
 
 ## Limites et précautions
@@ -59,6 +62,11 @@ ils ne valident pas encore l’import d’un export réel du laboratoire.
 Avant d’utiliser un export réel, examiner et anonymiser ses données.
 Ne publier dans le dépôt ni journaux bruts, ni identifiants sensibles,
 ni base SQLite contenant des alertes réelles.
+
+Le nouveau schéma SQLite n’est pas compatible avec les bases créées par
+l’ancienne version de l’outil. Conserver ces bases et utiliser un nouveau
+chemin `--db` pour les prochains imports ; aucune migration automatique
+n’est réalisée.
 
 ## Essai avec des alertes du laboratoire
 

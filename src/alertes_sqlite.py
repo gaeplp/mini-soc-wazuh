@@ -1,21 +1,64 @@
 import argparse
+import hashlib
 import json
 import sqlite3
 from pathlib import Path
 
 
 def creer_table(connexion):
+    colonnes = {
+        ligne[1] for ligne in connexion.execute("PRAGMA table_info(alertes)")
+    }
+    if colonnes and "cle_evenement" not in colonnes:
+        raise ValueError(
+            "Ancien format de base SQLite : utilise une nouvelle base avec --db. "
+            "Conserve l'ancienne base pour le moment."
+        )
+
     connexion.execute("""
         CREATE TABLE IF NOT EXISTS alertes (
             id INTEGER PRIMARY KEY,
+            cle_evenement TEXT NOT NULL UNIQUE,
             timestamp TEXT NOT NULL,
             agent TEXT NOT NULL,
             rule_id INTEGER NOT NULL,
             level INTEGER NOT NULL,
-            description TEXT NOT NULL,
-            UNIQUE(timestamp, agent, rule_id, description)
+            description TEXT NOT NULL
         )
     """)
+
+
+def extraire_alerte(alerte):
+    if not isinstance(alerte, dict):
+        raise ValueError("l'alerte doit être un objet JSON")
+
+    if isinstance(alerte.get("agent"), dict):
+        valeurs = (
+            str(alerte["timestamp"]),
+            str(alerte["agent"]["name"]),
+            int(alerte["rule"]["id"]),
+            int(alerte["rule"]["level"]),
+            str(alerte["rule"]["description"]),
+        )
+        identifiant = alerte.get("id")
+    else:
+        valeurs = (
+            str(alerte["timestamp"]),
+            str(alerte["agent"]),
+            int(alerte["rule_id"]),
+            int(alerte["level"]),
+            str(alerte["description"]),
+        )
+        identifiant = None
+
+    if identifiant is not None and str(identifiant).strip():
+        cle = "wazuh:" + str(identifiant)
+    else:
+        # Repli pour les données fictives et les extraits sans ID Wazuh.
+        contenu = json.dumps(valeurs, ensure_ascii=False)
+        cle = "champs:" + hashlib.sha256(contenu.encode("utf-8")).hexdigest()
+
+    return (cle, *valeurs)
 
 
 def importer(connexion, fichier):
@@ -24,32 +67,14 @@ def importer(connexion, fichier):
         if not ligne.strip():
             continue
         try:
-            alerte = json.loads(ligne)
-            if isinstance(alerte.get("agent"), dict):
-                # Format d'une alerte Wazuh
-                valeurs = (
-                    str(alerte["timestamp"]),
-                    str(alerte["agent"]["name"]),
-                    int(alerte["rule"]["id"]),
-                    int(alerte["rule"]["level"]),
-                    str(alerte["rule"]["description"]),
-                )
-            else:
-                # Format simplifié des données de démonstration
-                valeurs = (
-                    str(alerte["timestamp"]),
-                    str(alerte["agent"]),
-                    int(alerte["rule_id"]),
-                    int(alerte["level"]),
-                    str(alerte["description"]),
-                )
+            valeurs = extraire_alerte(json.loads(ligne))
         except (ValueError, TypeError, KeyError) as erreur:
             raise ValueError(f"Ligne {numero} invalide : {erreur}") from erreur
 
         curseur = connexion.execute(
             """INSERT OR IGNORE INTO alertes
-               (timestamp, agent, rule_id, level, description)
-               VALUES (?, ?, ?, ?, ?)""",
+               (cle_evenement, timestamp, agent, rule_id, level, description)
+               VALUES (?, ?, ?, ?, ?, ?)""",
             valeurs,
         )
         ajoutees += curseur.rowcount
@@ -74,6 +99,7 @@ def lister(connexion, agent):
     ):
         print(f"{horodatage} | {nom} | règle {regle} | niveau {niveau} | {description}")
 
+
 def resumer(connexion, agent=None):
     requete = "SELECT rule_id, COUNT(*) FROM alertes"
     parametres = ()
@@ -87,9 +113,10 @@ def resumer(connexion, agent=None):
     for regle, nombre in connexion.execute(requete, parametres):
         print(f"Règle {regle} : {nombre} alerte(s)")
 
+
 def main():
     analyseur = argparse.ArgumentParser(
-        description="Chronologie locale d'alertes de démonstration"
+        description="Chronologie locale d'alertes JSONL"
     )
     analyseur.add_argument(
         "--db", required=True, type=Path, help="Chemin de la base SQLite"
@@ -98,7 +125,6 @@ def main():
     commandes.add_parser("importer").add_argument("fichier", type=Path)
     commandes.add_parser("lister").add_argument("--agent")
     commandes.add_parser("resumer").add_argument("--agent")
-
 
     arguments = analyseur.parse_args()
     with sqlite3.connect(arguments.db) as connexion:
@@ -109,6 +135,7 @@ def main():
             lister(connexion, arguments.agent)
         else:
             resumer(connexion, arguments.agent)
+
 
 if __name__ == "__main__":
     main()
