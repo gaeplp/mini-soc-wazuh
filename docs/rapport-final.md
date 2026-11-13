@@ -48,8 +48,8 @@ laboratoire.
    corrélée est produite.
 3. Étudier une détection dédiée aux changements de groupes privilégiés
    et une source permettant d’attribuer les modifications de fichiers.
-4. Définir une procédure de qualification et de réponse aux alertes,
-   sans présenter la détection seule comme une mesure de prévention.
+4. Mettre en pratique la [procédure de qualification des alertes SSH](procedure-triage-ssh.md), puis définir une réponse adaptée. La procédure est rédigée, mais son application systématique et une réponse automatique ne sont pas validées.
+
 
 ## Conclusion
 
