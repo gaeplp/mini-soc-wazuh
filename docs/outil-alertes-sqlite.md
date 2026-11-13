@@ -108,3 +108,7 @@ maximal de 60 secondes :
 ```powershell
 python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-alertes-v2-20261113-092859.db" sequences-ssh --agent lab-linux
 ```
+
+Lorsque les alertes contiennent un compte (dstuser), une adresse source (srcip) et un port source (srcport), l’outil compare ces champs. Deux valeurs renseignées et différentes empêchent le rapprochement. Si un champ manque dans l’une des alertes, la séquence peut encore être affichée : elle reste alors une piste à vérifier dans les journaux d’origine.
+
+Les bases SQLite créées par la version précédente reçoivent les nouvelles colonnes, mais les alertes déjà importées ne sont pas enrichies rétroactivement. Les 12 alertes minimisées du premier essai ne permettent donc pas, à elles seules, de valider cette comparaison. Les tests automatisés couvrent les cas de comptes différents et de sources identiques ou différentes.

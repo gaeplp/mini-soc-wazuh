@@ -18,7 +18,7 @@ laboratoire.
 | SSH : échec puis réussite | Les règles `5760` et `5715` ont permis de reconstituer une séquence d’un échec suivi d’une réussite. | [Scénario 02](../scenarios/02-succes-apres-echecs.md) |
 | Groupe privilégié | L’exécution de la commande d’ajout à `sudo` a été visible dans Wazuh ; le changement de groupe a été confirmé localement. | [Scénario 03](../scenarios/03-ajout-groupe-privilegie.md) |
 | Intégrité des fichiers | La création et les modifications d’un fichier de test surveillé ont été détectées. | [Scénario 04](../scenarios/04-modification-fichier.md) |
-| Analyse locale | L’outil Python/SQLite importe, liste et résume des alertes JSONL. Sur un extrait minimisé de 12 alertes du laboratoire, sa commande `sequences-ssh` a repéré deux séquences candidates « échec puis réussite » sur le même agent, à 36,012 s et 6,003 s d’intervalle. Les 7 tests automatisés passent. | [Outil Python/SQLite](outil-alertes-sqlite.md) |
+| Analyse locale | L’outil Python/SQLite importe, liste et résume des alertes JSONL. Sur un extrait minimisé de 12 alertes du laboratoire, sa commande `sequences-ssh` a repéré deux séquences candidates « échec puis réussite » sur le même agent, à 36,012 s et 6,003 s d’intervalle. Les 9 tests automatisés passent. | [Outil Python/SQLite](outil-alertes-sqlite.md) |
 
 ## Limites
 
@@ -39,6 +39,11 @@ laboratoire.
   une règle de corrélation Wazuh**. Les données importées ne permettent
   pas de confirmer que les événements rapprochés concernent le même
   compte ou la même connexion SSH.
+  - L’outil compare désormais le compte, l’adresse et le port source lorsqu’ils
+  sont présents dans les deux alertes. Des valeurs renseignées et différentes
+  empêchent leur rapprochement. Les 12 alertes minimisées importées auparavant
+  ne contiennent pas ces champs : leurs deux séquences SSH restent des pistes
+  d’investigation, et non des connexions confirmées par l’outil.
 
 ## Suites prioritaires
 

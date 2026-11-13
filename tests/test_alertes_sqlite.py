@@ -167,5 +167,88 @@ class TestAlertesSQLite(unittest.TestCase):
             "Règle 5760 : 2 alerte(s)",
         )
 
+    def test_sequences_ssh_comptes_differents(self):
+        fichier = Path(self.dossier.name) / "comptes-differents.jsonl"
+        alertes = [
+            {
+                "id": "test-echec-alice",
+                "timestamp": "2026-11-06T08:58:08.000+0000",
+                "agent": {"name": "lab-linux"},
+                "rule": {
+                    "id": "5760",
+                    "level": 5,
+                    "description": "Échec SSH fictif",
+                },
+                "data": {
+                    "dstuser": "alice",
+                    "srcip": "192.0.2.10",
+                    "srcport": "50164",
+                },
+            },
+            {
+                "id": "test-reussite-bob",
+                "timestamp": "2026-11-06T08:58:14.000+0000",
+                "agent": {"name": "lab-linux"},
+                "rule": {
+                    "id": "5715",
+                    "level": 3,
+                    "description": "Réussite SSH fictive",
+                },
+                "data": {
+                    "dstuser": "bob",
+                    "srcip": "192.0.2.10",
+                    "srcport": "50164",
+                },
+            },
+        ]
+        fichier.write_text(
+            "\n".join(json.dumps(alerte, ensure_ascii=False) for alerte in alertes)
+            + "\n",
+            encoding="utf-8",
+        )
+
+        self.lancer("importer", fichier)
+        self.assertEqual(
+            self.lancer("sequences-ssh", "--agent", "lab-linux"),
+            "",
+        )
+    def test_sequences_ssh_source_identique(self):
+        fichier = Path(self.dossier.name) / "sources-ssh.jsonl"
+
+        def alerte(identifiant, heure, regle, ip):
+            return {
+                "id": identifiant,
+                "timestamp": f"2026-11-06T{heure}+0000",
+                "agent": {"name": "lab-linux"},
+                "rule": {
+                    "id": str(regle),
+                    "level": 5 if regle == 5760 else 3,
+                    "description": "Événement SSH fictif",
+                },
+                "data": {
+                    "dstuser": "alice",
+                    "srcip": ip,
+                    "srcport": "50164",
+                },
+            }
+
+        alertes = [
+            alerte("echec-1", "08:00:00.000", 5760, "192.0.2.10"),
+            alerte("reussite-autre-ip", "08:00:05.000", 5715, "192.0.2.20"),
+            alerte("reussite-meme-ip", "08:00:10.000", 5715, "192.0.2.10"),
+        ]
+        fichier.write_text(
+            "\n".join(json.dumps(item, ensure_ascii=False) for item in alertes) + "\n",
+            encoding="utf-8",
+        )
+
+        self.lancer("importer", fichier)
+        resultat = self.lancer("sequences-ssh", "--agent", "lab-linux")
+
+        self.assertEqual(len(resultat.splitlines()), 1)
+        self.assertIn("08:00:00.000", resultat)
+        self.assertIn("08:00:10.000", resultat)
+        self.assertNotIn("08:00:05.000", resultat)
+
 if __name__ == "__main__":
     unittest.main()
