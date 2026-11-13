@@ -60,3 +60,10 @@ Les tests sont réalisés uniquement dans un laboratoire personnel isolé,
 sur des machines et des comptes autorisés. Les résultats documentent ce
 qui a été effectivement observé, sans assimiler les tests à des incidents
 réels. Aucun mot de passe ou autre secret ne doit être publié dans le dépôt.
+
+## Bilan du projet
+
+Le [bilan du Mini-SOC](docs/rapport-final.md) récapitule les résultats
+validés, les limites des tests et les suites prioritaires. La supervision
+Linux a été testée ; l’enrôlement et la remontée d’alertes de `SOC-WIN11`
+restent à valider.
