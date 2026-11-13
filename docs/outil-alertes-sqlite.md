@@ -98,3 +98,13 @@ sur `lab-linux` indique 1 alerte pour la règle `554`, 5 pour `5715` et
 Cet extrait ne contient pas les identifiants `id` d’origine de Wazuh :
 ce test vérifie donc le repli sur les champs conservés, et non la
 déduplication par identifiant réel.
+
+## Repérage de séquences SSH
+
+La commande suivante recherche, sur un même agent, un échec SSH
+(règle `5760`) suivi d’une réussite SSH (règle `5715`) dans un délai
+maximal de 60 secondes :
+
+```powershell
+python src/alertes_sqlite.py --db "$env:TEMP\mini-soc-alertes-v2-20261113-092859.db" sequences-ssh --agent lab-linux
+```

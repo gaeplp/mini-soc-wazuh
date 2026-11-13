@@ -99,7 +99,46 @@ class TestAlertesSQLite(unittest.TestCase):
             ],
         )
         self.assertIn("Règle 5760 : 2 alerte(s)", self.lancer("resumer"))
-        
+
+    def test_sequences_ssh(self):
+        fichier = Path(self.dossier.name) / "sequences-ssh.jsonl"
+
+        evenements = [
+            ("2026-11-06T08:16:50.000+0000", "lab-linux", 5715),  # trop tôt
+            ("2026-11-06T08:17:25.986+0000", "lab-linux", 5760),
+            ("2026-11-06T08:18:01.998+0000", "lab-linux", 5715),
+            ("2026-11-06T08:58:08.743+0000", "lab-linux", 5760),
+            ("2026-11-06T08:58:10.000+0000", "autre-agent", 5715),
+            ("2026-11-06T08:58:14.746+0000", "lab-linux", 5715),
+            ("2026-11-06T09:00:00.000+0000", "lab-linux", 5760),
+            ("2026-11-06T09:02:00.000+0000", "lab-linux", 5715),  # trop tard
+        ]
+
+        alertes = [
+            {
+                "timestamp": horodatage,
+                "agent": agent,
+                "rule_id": regle,
+                "level": 5 if regle == 5760 else 3,
+                "description": "Événement SSH fictif",
+            }
+            for horodatage, agent, regle in evenements
+        ]
+        fichier.write_text(
+            "\n".join(json.dumps(alerte, ensure_ascii=False) for alerte in alertes)
+            + "\n",
+            encoding="utf-8",
+        )
+
+        self.lancer("importer", fichier)
+        lignes = self.lancer("sequences-ssh", "--agent", "lab-linux").splitlines()
+
+        self.assertEqual(len(lignes), 2)
+        self.assertIn("08:17:25.986", lignes[0])
+        self.assertIn("08:18:01.998", lignes[0])
+        self.assertIn("08:58:08.743", lignes[1])
+        self.assertIn("08:58:14.746", lignes[1])
+
     def test_ids_wazuh_distincts(self):
         fichier = Path(self.dossier.name) / "ids-distincts.jsonl"
         alertes = [
@@ -127,7 +166,6 @@ class TestAlertesSQLite(unittest.TestCase):
             self.lancer("resumer", "--agent", "demo-linux"),
             "Règle 5760 : 2 alerte(s)",
         )
-
 
 if __name__ == "__main__":
     unittest.main()

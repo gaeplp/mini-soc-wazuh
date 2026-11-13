@@ -2,6 +2,7 @@ import argparse
 import hashlib
 import json
 import sqlite3
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -113,6 +114,50 @@ def resumer(connexion, agent=None):
     for regle, nombre in connexion.execute(requete, parametres):
         print(f"Règle {regle} : {nombre} alerte(s)")
 
+def sequences_ssh(connexion, agent=None):
+    requete = """
+        SELECT timestamp, agent, rule_id
+        FROM alertes
+        WHERE rule_id IN (5760, 5715)
+    """
+    parametres = ()
+    if agent:
+        requete += " AND agent = ?"
+        parametres = (agent,)
+
+    evenements = []
+    for horodatage, nom_agent, regle in connexion.execute(requete, parametres):
+        try:
+            instant = datetime.fromisoformat(
+                horodatage.replace("Z", "+00:00")
+            )
+        except ValueError as erreur:
+            raise ValueError(
+                f"Horodatage invalide : {horodatage}"
+            ) from erreur
+
+        if instant.tzinfo is None:
+            raise ValueError(f"Fuseau horaire absent : {horodatage}")
+
+        evenements.append(
+            (instant.astimezone(timezone.utc), horodatage, nom_agent, regle)
+        )
+
+    evenements.sort(key=lambda evenement: evenement[0])
+    dernier_echec = {}
+
+    for instant, horodatage, nom_agent, regle in evenements:
+        if regle == 5760:
+            dernier_echec[nom_agent] = (instant, horodatage)
+        elif nom_agent in dernier_echec:
+            instant_echec, horodatage_echec = dernier_echec.pop(nom_agent)
+            delai = instant - instant_echec
+
+            if timedelta(0) <= delai <= timedelta(seconds=60):
+                print(
+                    f"{nom_agent} | échec {horodatage_echec} | "
+                    f"réussite {horodatage} | délai {delai.total_seconds():.3f} s"
+                )
 
 def main():
     analyseur = argparse.ArgumentParser(
@@ -125,6 +170,7 @@ def main():
     commandes.add_parser("importer").add_argument("fichier", type=Path)
     commandes.add_parser("lister").add_argument("--agent")
     commandes.add_parser("resumer").add_argument("--agent")
+    commandes.add_parser("sequences-ssh").add_argument("--agent")
 
     arguments = analyseur.parse_args()
     with sqlite3.connect(arguments.db) as connexion:
@@ -133,9 +179,10 @@ def main():
             importer(connexion, arguments.fichier)
         elif arguments.commande == "lister":
             lister(connexion, arguments.agent)
-        else:
+        elif arguments.commande == "resumer":
             resumer(connexion, arguments.agent)
-
+        else:
+            sequences_ssh(connexion, arguments.agent)
 
 if __name__ == "__main__":
     main()
