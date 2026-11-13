@@ -18,7 +18,7 @@ laboratoire.
 | SSH : échec puis réussite | Les règles `5760` et `5715` ont permis de reconstituer une séquence d’un échec suivi d’une réussite. | [Scénario 02](../scenarios/02-succes-apres-echecs.md) |
 | Groupe privilégié | L’exécution de la commande d’ajout à `sudo` a été visible dans Wazuh ; le changement de groupe a été confirmé localement. | [Scénario 03](../scenarios/03-ajout-groupe-privilegie.md) |
 | Intégrité des fichiers | La création et les modifications d’un fichier de test surveillé ont été détectées. | [Scénario 04](../scenarios/04-modification-fichier.md) |
-| Analyse locale | L’outil Python/SQLite importe, liste et résume des alertes JSONL. Ses tests automatisés passent ; un extrait minimisé de 12 alertes du laboratoire a été importé et consulté. | [Outil Python/SQLite](outil-alertes-sqlite.md) |
+| Analyse locale | L’outil Python/SQLite importe, liste et résume des alertes JSONL. Sur un extrait minimisé de 12 alertes du laboratoire, sa commande `sequences-ssh` a repéré deux séquences candidates « échec puis réussite » sur le même agent, à 36,012 s et 6,003 s d’intervalle. Les 7 tests automatisés passent. | [Outil Python/SQLite](outil-alertes-sqlite.md) |
 
 ## Limites
 
@@ -35,6 +35,10 @@ laboratoire.
 - L’outil SQLite conserve une sélection de champs, pas l’intégralité
   des alertes Wazuh. L’extrait réel minimisé ne contenait pas les
   identifiants d’événements Wazuh.
+  - Le repérage des séquences SSH est réalisé par l’outil Python, **pas par
+  une règle de corrélation Wazuh**. Les données importées ne permettent
+  pas de confirmer que les événements rapprochés concernent le même
+  compte ou la même connexion SSH.
 
 ## Suites prioritaires
 
